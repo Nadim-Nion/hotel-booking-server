@@ -27,7 +27,8 @@ async function run() {
         // await client.connect();
 
         const database = client.db('airbnbDB');
-        const hotelCollection = database.collection('hotels');
+        // const hotelCollection = database.collection('hotels');
+        const hotelCollection = database.collection('resorts');
 
         /*---------------------------------------------- 
                 Hotel Collection API
