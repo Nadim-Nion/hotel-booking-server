@@ -26,7 +26,31 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
 
+        const database = client.db('airbnbDB');
+        const hotelCollection = database.collection('hotels');
 
+        /*---------------------------------------------- 
+                Hotel Collection API
+        -----------------------------------------------*/
+
+        // Load all hotels data
+        app.get('/hotels', async (req, res) => {
+            const cursor = hotelCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        // Load hotels data based on their category
+        app.get('/hotels/:category', async (req, res) => {
+            const category = req.params.category;
+            let query = {};
+            if (category) {
+                query = { category };
+            }
+            const cursor = hotelCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
