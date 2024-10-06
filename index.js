@@ -85,7 +85,6 @@ async function run() {
 
 
             const cursor = hotelCollection.find(query);
-            console.log(query);
             const result = await cursor.toArray();
             res.send(result);
         });
