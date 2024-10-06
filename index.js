@@ -27,10 +27,6 @@ async function run() {
         // await client.connect();
 
         const database = client.db('airbnbDB');
-        // const hotelCollection = database.collection('hotels');
-        // const hotelCollection = database.collection('resorts');
-        // const hotelCollection = database.collection('motels');
-        // const hotelCollection = database.collection('hotelsTwo');
         const hotelCollection = database.collection('hotelsThree');
 
         /*---------------------------------------------- 
@@ -49,13 +45,9 @@ async function run() {
             const category = req.params.category;
             const { destination, checkInDate, checkOutDate, guests } = req.query;
             const { adults, children, infants, pets } = guests;
-            // console.log('Adults:', adults, 'Children:', children, 'Infants:', infants, 'Pets:', pets);
+
 
             let query = {};
-
-            /* if (category) {
-                query = { category };
-            } */
 
             if (category) {
                 query.category = category;
@@ -66,19 +58,34 @@ async function run() {
             };
 
             if (checkInDate && checkOutDate) {
-                query.checkIn = { $lte: checkInDate };
-                query.checkOut = { $gte: checkOutDate };
+                const options = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Dhaka' };
+                const formattedCheckInDate = new Date(checkInDate).toLocaleDateString('en-CA', options);
+                const formattedCheckOutDate = new Date(checkOutDate).toLocaleDateString('en-CA', options);
+
+                query.checkIn = { $lte: formattedCheckInDate };
+                query.checkOut = { $gte: formattedCheckOutDate };
             };
 
-            if (adults || children || infants || pets) {
-                query['guestCapacity.adult'] = { $gte: parseInt(adults) || 0 };
-                query['guestCapacity.child'] = { $gte: parseInt(children) || 0 };
-                query['guestCapacity.infant'] = { $gte: parseInt(infants) || 0 };
-                query['guestCapacity.pets'] = { $gte: parseInt(pets) || 0 };
+
+            if (adults) {
+                query['guestCapacity.adult'] = { $gte: parseInt(adults) };
+            }
+
+            if (children) {
+                query['guestCapacity.child'] = { $gte: parseInt(children) };
+            }
+
+            if (infants) {
+                query['guestCapacity.infant'] = { $gte: parseInt(infants) };
+            }
+
+            if (pets) {
+                query['guestCapacity.pets'] = { $gte: parseInt(pets) };
             }
 
 
             const cursor = hotelCollection.find(query);
+            console.log(query);
             const result = await cursor.toArray();
             res.send(result);
         });
