@@ -29,7 +29,9 @@ async function run() {
         const database = client.db('airbnbDB');
         // const hotelCollection = database.collection('hotels');
         // const hotelCollection = database.collection('resorts');
-        const hotelCollection = database.collection('motels');
+        // const hotelCollection = database.collection('motels');
+        // const hotelCollection = database.collection('hotelsTwo');
+        const hotelCollection = database.collection('hotelsThree');
 
         /*---------------------------------------------- 
                 Hotel Collection API
@@ -42,13 +44,40 @@ async function run() {
             res.send(result);
         });
 
-        // Load hotels data based on their category
+        // Load hotels data based on their category and search parameters
         app.get('/hotels/:category', async (req, res) => {
             const category = req.params.category;
+            const { destination, checkInDate, checkOutDate, guests } = req.query;
+            const { adults, children, infants, pets } = guests;
+            // console.log('Adults:', adults, 'Children:', children, 'Infants:', infants, 'Pets:', pets);
+
             let query = {};
-            if (category) {
+
+            /* if (category) {
                 query = { category };
+            } */
+
+            if (category) {
+                query.category = category;
+            };
+
+            if (destination) {
+                query.hotelDestination = destination;
+            };
+
+            if (checkInDate && checkOutDate) {
+                query.checkIn = { $lte: checkInDate };
+                query.checkOut = { $gte: checkOutDate };
+            };
+
+            if (adults || children || infants || pets) {
+                query['guestCapacity.adult'] = { $gte: parseInt(adults) || 0 };
+                query['guestCapacity.child'] = { $gte: parseInt(children) || 0 };
+                query['guestCapacity.infant'] = { $gte: parseInt(infants) || 0 };
+                query['guestCapacity.pets'] = { $gte: parseInt(pets) || 0 };
             }
+
+
             const cursor = hotelCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
