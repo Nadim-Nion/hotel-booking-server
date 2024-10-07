@@ -77,7 +77,7 @@ Vercel: https://hotel-booking-server-brown.vercel.app/
 
 1. Clone the repository:
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/Nadim-Nion/hotel-booking-server
    ```
 2. Install dependencies:
    ```bash
